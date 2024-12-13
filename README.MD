@@ -3,7 +3,7 @@
 ## Project Overview
 
 This project is a comprehensive healthcare management system designed to streamline communication and appointment processes between patients, doctors, and administrators. The system incorporates cuing-edge technologies such as
-NodeJS, Express, Prisma, and PostgreSQL for ecient and secure data management.
+NodeJS, Express, Prisma, and PostgreSQL for efficient and secure data management.
 
 ## Features
 
