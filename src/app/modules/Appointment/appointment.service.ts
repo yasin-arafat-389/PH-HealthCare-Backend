@@ -225,8 +225,44 @@ const getAllFromDB = async (filters: any, options: IPaginationOptions) => {
   };
 };
 
+const changeAppointmentStatus = async (
+  appointmentId: string,
+  status: AppointmentStatus,
+  user: IAuthUser
+) => {
+  const appointmentData = await prisma.appointment.findUniqueOrThrow({
+    where: {
+      id: appointmentId,
+    },
+    include: {
+      doctor: true,
+    },
+  });
+
+  if (user?.role === UserRole.DOCTOR) {
+    if (!(user.email === appointmentData.doctor.email)) {
+      throw new ApiError(
+        StatusCodes.BAD_REQUEST,
+        "This is not your appointment!"
+      );
+    }
+  }
+
+  const result = await prisma.appointment.update({
+    where: {
+      id: appointmentId,
+    },
+    data: {
+      status,
+    },
+  });
+
+  return result;
+};
+
 export const AppointmentService = {
   createAppointment,
   getMyAppointment,
   getAllFromDB,
+  changeAppointmentStatus,
 };
