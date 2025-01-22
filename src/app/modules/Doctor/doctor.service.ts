@@ -88,6 +88,24 @@ const getAllFromDB = async (
   };
 };
 
+const getByIdFromDB = async (id: string): Promise<Doctor | null> => {
+  const result = await prisma.doctor.findUnique({
+    where: {
+      id,
+      isDeleted: false,
+    },
+    include: {
+      doctorSpecialties: {
+        include: {
+          specialities: true,
+        },
+      },
+    },
+  });
+  return result;
+};
+
 export const DoctorService = {
   getAllFromDB,
+  getByIdFromDB,
 };
