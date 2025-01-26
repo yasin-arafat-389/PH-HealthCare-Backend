@@ -186,9 +186,32 @@ const deleteFromDB = async (id: string): Promise<Doctor> => {
   });
 };
 
+const softDelete = async (id: string): Promise<Doctor> => {
+  return await prisma.$transaction(async (transactionClient) => {
+    const deleteDoctor = await transactionClient.doctor.update({
+      where: { id },
+      data: {
+        isDeleted: true,
+      },
+    });
+
+    await transactionClient.user.update({
+      where: {
+        email: deleteDoctor.email,
+      },
+      data: {
+        status: UserStatus.DELETED,
+      },
+    });
+
+    return deleteDoctor;
+  });
+};
+
 export const DoctorService = {
   updateIntoDB,
   getAllFromDB,
   getByIdFromDB,
   deleteFromDB,
+  softDelete,
 };
