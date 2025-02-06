@@ -24,6 +24,35 @@ const fetchDashboardMetaData = async (user: IAuthUser) => {
   return metaData;
 };
 
+const getSuperAdminMetaData = async () => {
+  const appointmentCount = await prisma.appointment.count();
+  const patientCount = await prisma.patient.count();
+  const doctorCount = await prisma.doctor.count();
+  const adminCount = await prisma.admin.count();
+  const paymentCount = await prisma.payment.count();
+
+  const totalRevenue = await prisma.payment.aggregate({
+    _sum: { amount: true },
+    where: {
+      status: PaymentStatus.PAID,
+    },
+  });
+
+  const barChartData = await getBarChartData();
+  const pieCharData = await getPieChartData();
+
+  return {
+    appointmentCount,
+    patientCount,
+    doctorCount,
+    adminCount,
+    paymentCount,
+    totalRevenue,
+    barChartData,
+    pieCharData,
+  };
+};
+
 export const MetaService = {
   fetchDashboardMetaData,
 };
