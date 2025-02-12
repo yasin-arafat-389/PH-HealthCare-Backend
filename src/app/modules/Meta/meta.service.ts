@@ -201,6 +201,21 @@ const getBarChartData = async () => {
   return appointmentCountByMonth;
 };
 
+const getPieChartData = async () => {
+  const appointmentStatusDistribution = await prisma.appointment.groupBy({
+    by: ["status"],
+    _count: { id: true },
+  });
+
+  const formattedAppointmentStatusDistribution =
+    appointmentStatusDistribution.map(({ status, _count }) => ({
+      status,
+      count: Number(_count.id),
+    }));
+
+  return formattedAppointmentStatusDistribution;
+};
+
 export const MetaService = {
   fetchDashboardMetaData,
 };
