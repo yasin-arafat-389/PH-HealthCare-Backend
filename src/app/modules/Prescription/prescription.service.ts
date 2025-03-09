@@ -49,6 +49,50 @@ const insertIntoDB = async (
   return result;
 };
 
+const patientPrescription = async (
+  user: IAuthUser,
+  options: IPaginationOptions
+) => {
+  const { limit, page, skip } = paginationHelper.calculatePagination(options);
+
+  const result = await prisma.prescription.findMany({
+    where: {
+      patient: {
+        email: user?.email,
+      },
+    },
+    skip,
+    take: limit,
+    orderBy:
+      options.sortBy && options.sortOrder
+        ? { [options.sortBy]: options.sortOrder }
+        : { createdAt: "desc" },
+    include: {
+      doctor: true,
+      patient: true,
+      appointment: true,
+    },
+  });
+
+  const total = await prisma.prescription.count({
+    where: {
+      patient: {
+        email: user?.email,
+      },
+    },
+  });
+
+  return {
+    meta: {
+      total,
+      page,
+      limit,
+    },
+    data: result,
+  };
+};
+
 export const PrescriptionService = {
   insertIntoDB,
+  patientPrescription,
 };
