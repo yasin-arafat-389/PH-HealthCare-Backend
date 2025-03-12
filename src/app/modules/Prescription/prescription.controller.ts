@@ -23,6 +23,25 @@ const insertIntoDB = catchAsync(
   }
 );
 
+const patientPrescription = catchAsync(
+  async (req: Request & { user?: IAuthUser }, res: Response) => {
+    const user = req.user;
+    const options = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
+    const result = await PrescriptionService.patientPrescription(
+      user as IAuthUser,
+      options
+    );
+    sendResponse(res, {
+      statusCode: StatusCodes.OK,
+      success: true,
+      message: "Prescription fetched successfully",
+      meta: result.meta,
+      data: result.data,
+    });
+  }
+);
+
 export const PrescriptionController = {
   insertIntoDB,
+  patientPrescription,
 };
